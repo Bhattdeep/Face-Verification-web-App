@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Student Registration</h2>
+    <form method="POST" action="{{ url_for('register') }}" enctype="multipart/form-data">
+        <div class="details-grid">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="student_name">Student Name</label>
+                <input type="text" id="student_name" name="student_name" required>
+            </div>
+            <div class="form-group">
+                <label for="father_name">Father's Name</label>
+                <input type="text" id="father_name" name="father_name">
+            </div>
+            <div class="form-group">
+                <label for="mother_name">Mother's Name</label>
+                <input type="text" id="mother_name" name="mother_name">
+            </div>
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth</label>
+                <input type="date" id="date_of_birth" name="date_of_birth">
+            </div>
+            <div class="form-group">
+                <label for="course">Course</label>
+                <select id="course" name="course">
+                    <option value="">Select Course</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Management">Management</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester</label>
+                <select id="semester" name="semester">
+                    <option value="">Select Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="branch">Branch</label>
+                <input type="text" id="branch" name="branch">
+            </div>
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" id="section" name="section">
+            </div>
+            <div class="form-group">
+                <label for="class_roll_no">Class Roll No</label>
+                <input type="text" id="class_roll_no" name="class_roll_no">
+            </div>
+            <div class="form-group">
+                <label for="university_roll_no">University Roll No</label>
+                <input type="text" id="university_roll_no" name="university_roll_no">
+            </div>
+            <div class="form-group">
+                <label for="high_school_percentage">High School Percentage</label>
+                <input type="number" step="0.01" id="high_school_percentage" name="high_school_percentage">
+            </div>
+            <div class="form-group">
+                <label for="intermediate_percentage">Intermediate Percentage</label>
+                <input type="number" step="0.01" id="intermediate_percentage" name="intermediate_percentage">
+            </div>
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
+            </div>
+        </div>
+        <button type="submit" class="btn">Register</button>
+        <p>Already have an account? <a href="{{ url_for('login') }}" class="link">Login</a></p>
+    </form>
+</div>
+{% endblock %}

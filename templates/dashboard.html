@@ -1,0 +1,76 @@
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-container">
+    <h2 style="color: D4AF37;">Welcome, {{ user.username }}!</h2>
+
+    <!-- Profile Picture Section -->
+    <div class="profile-section">
+        {% if user.profile_picture %}
+        <img src="{{ url_for('static', filename='profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="current-profile-picture">
+        {% endif %}
+        </div>
+
+    <!-- Student Details Section -->
+    <div style="color: D4AF37;" class="student-details">
+        <h3>Student Information</h3>
+        <ul class="details-list">
+            <li>
+                <span class="detail-label">Full Name:</span>
+                <span class="detail-value">{{ user.student_name or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Father's Name:</span>
+                <span class="detail-value">{{ user.father_name or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Mother's Name:</span>
+                <span class="detail-value">{{ user.mother_name or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Date of Birth:</span>
+                <span class="detail-value">{{ user.date_of_birth or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Course:</span>
+                <span class="detail-value">{{ user.course or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Branch:</span>
+                <span class="detail-value">{{ user.branch or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Semester:</span>
+                <span class="detail-value">{{ user.semester or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Section:</span>
+                <span class="detail-value">{{ user.section or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Class Roll No:</span>
+                <span class="detail-value">{{ user.class_roll_no or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">University Roll No:</span>
+                <span class="detail-value">{{ user.university_roll_no or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">High School Percentage:</span>
+                <span class="detail-value">{{ user.high_school_percentage or 'Not Provided' }}</span>
+            </li>
+            <li>
+                <span class="detail-label">Intermediate Percentage:</span>
+                <span class="detail-value">{{ user.intermediate_percentage or 'Not Provided' }}</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Dashboard Actions -->
+    <div class="dashboard-actions">
+        <a href="{{ url_for('update_profile') }}" class="btn">Update Profile</a>
+        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </div>
+</div>
+{% endblock %}

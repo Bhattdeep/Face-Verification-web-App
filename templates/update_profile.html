@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Update Profile{% endblock %}
+{% block content %}
+<div class="update-profile-container">
+    <h2>Update Profile</h2>
+    <form method="POST" action="{{ url_for('update_profile') }}" enctype="multipart/form-data" class="update-form">
+        <div class="profile-image-section">
+            {% if user.profile_picture %}
+                <img src="{{ url_for('static', filename='profile_pictures/' + user.profile_picture) }}" alt="Current Profile" class="current-profile-picture">
+            {% else %}
+                <p>No profile picture available.</p>
+            {% endif %}
+            <div class="form-group">
+                <label for="profile_picture">Update Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Personal Details</h3>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <div class="form-group">
+                <label for="student_name">Full Name</label>
+                <input type="text" id="student_name" name="student_name" value="{{ user.student_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="father_name">Father's Name</label>
+                <input type="text" id="father_name" name="father_name" value="{{ user.father_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="mother_name">Mother's Name</label>
+                <input type="text" id="mother_name" name="mother_name" value="{{ user.mother_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth</label>
+                <input type="date" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth }}">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Academic Information</h3>
+            <div class="form-group">
+                <label for="course">Course</label>
+                <select id="course" name="course">
+                    <option value="btech" {% if user.course == 'btech' %}selected{% endif %}>B.Tech</option>
+                    <option value="mtech" {% if user.course == 'mtech' %}selected{% endif %}>M.Tech</option>
+                    <option value="bca" {% if user.course == 'bca' %}selected{% endif %}>BCA</option>
+                    <option value="mca" {% if user.course == 'mca' %}selected{% endif %}>MCA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="branch">Branch</label>
+                <select id="branch" name="branch">
+                    <option value="cse" {% if user.branch == 'cse' %}selected{% endif %}>Computer Science</option>
+                    <option value="it" {% if user.branch == 'it' %}selected{% endif %}>Information Technology</option>
+                    <option value="ece" {% if user.branch == 'ece' %}selected{% endif %}>Electronics</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester</label>
+                <input type="text" id="semester" name="semester" value="{{ user.semester }}">
+            </div>
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" id="section" name="section" value="{{ user.section }}">
+            </div>
+            <div class="form-group">
+                <label for="class_roll_no">Class Roll No</label>
+                <input type="text" id="class_roll_no" name="class_roll_no" value="{{ user.class_roll_no }}">
+            </div>
+            <div class="form-group">
+                <label for="university_roll_no">University Roll No</label>
+                <input type="text" id="university_roll_no" name="university_roll_no" value="{{ user.university_roll_no }}">
+            </div>
+            <div class="form-group">
+                <label for="high_school_percentage">High School Percentage</label>
+                <input type="text" id="high_school_percentage" name="high_school_percentage" value="{{ user.high_school_percentage }}">
+            </div>
+            <div class="form-group">
+                <label for="intermediate_percentage">Intermediate Percentage</label>
+                <input type="text" id="intermediate_percentage" name="intermediate_percentage" value="{{ user.intermediate_percentage }}">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-update">Save Changes</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

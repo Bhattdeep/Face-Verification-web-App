@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Student Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/golden_black_theme.css') }}">
+    <style>
+        /* Flash message styles */
+        .flash-messages {
+            display: flex;
+            flex-direction: column; /* Ensures messages appear vertically */
+            align-items: center; /* Centers messages horizontally */
+            width: 100%;
+        }
+        .flash {
+            padding: 15px;
+            margin: 10px 0; /* Adds space between messages */
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            width: 80%; /* Adjust width for better appearance */
+        }
+        .flash.success { background-color: #4CAF50; color: white; } /* Success - green */
+        .flash.error { background-color: #f44336; color: white; }   /* Error - red */
+        .flash.warning { background-color: #ff9800; color: white; } /* Warning - orange */
+        .flash.info { background-color: #2196F3; color: white; }    /* Info - blue */
+    </style>
+</head>
+<body>
+    <!-- Flash Messages Section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+</body>
+</html>
