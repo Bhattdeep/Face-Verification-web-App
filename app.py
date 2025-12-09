@@ -25,6 +25,9 @@ UPLOAD_FOLDER = 'static/profile_pictures'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Create upload folder if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 # Initialize face verification
 face_verifier = FastFaceVerification(threshold=0.6)
 
@@ -39,11 +42,10 @@ def save_profile_picture(file, user_id):
     Save profile picture with a unique name.
     """
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        unique_filename = f"{user_id}_{filename}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        file.save(file_path)
-        return unique_filename
+        filename = secure_filename(f"{user_id}_{file.filename}")
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        return filename
     return None
 
 # Routes

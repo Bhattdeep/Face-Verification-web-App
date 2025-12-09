@@ -1,19 +1,26 @@
 import os
 import cv2
 import numpy as np
-import face_recognition
 import time
+import insightface
+from insightface.app import FaceAnalysis
 
 class FastFaceVerification:
-    def __init__(self, threshold=0.6, max_faces=1):
+    def __init__(self, threshold=0.5, max_faces=1):
         """
-        Fast and efficient face verification.
+        Fast and efficient face verification using ArcFace.
         
-        :param threshold: Similarity threshold for face matching
+        :param threshold: Similarity threshold for face matching (0.0 to 1.0)
         :param max_faces: Maximum number of faces to process
         """
         self.threshold = threshold
         self.max_faces = max_faces
+        
+        # Initialize ArcFace model
+        self.model = FaceAnalysis(name='buffalo_l')
+        self.model.prepare(ctx_id=-1)  # -1 for CPU, 0 for GPU
+        
+        print("✓ ArcFace model initialized successfully")
 
     def _preprocess_image(self, image_path):
         """
@@ -35,27 +42,40 @@ class FastFaceVerification:
 
     def detect_faces(self, image_path):
         """
-        Efficient face detection.
+        Efficient face detection using RetinaFace (more accurate than HOG).
         
         :param image_path: Path to the image
-        :return: List of face locations
+        :return: List of face locations in the same format as before (top, right, bottom, left)
         """
-        # Load image using face_recognition
-        img = face_recognition.load_image_file(image_path)
-        
-        # Use HOG model for faster detection
-        faces = face_recognition.face_locations(img, model='hog')
-        
-        # Limit to max_faces
-        return faces[:self.max_faces]
+        try:
+            # Load image using OpenCV
+            img = cv2.imread(image_path)
+            
+            # Detect faces using ArcFace/RetinaFace
+            faces = self.model.get(img)
+            
+            # Convert to same format as original (top, right, bottom, left)
+            face_locations = []
+            for face in faces[:self.max_faces]:
+                # ArcFace returns [x1, y1, x2, y2]
+                x1, y1, x2, y2 = face.bbox.astype(int)
+                # Convert to (top, right, bottom, left) format
+                face_location = (y1, x2, y2, x1)  # top, right, bottom, left
+                face_locations.append(face_location)
+            
+            return face_locations
+            
+        except Exception as e:
+            print(f"Face detection error: {e}")
+            return []
 
     def verify_faces(self, image1_path, image2_path):
         """
-        Fast face verification with improved reliability.
+        Fast face verification with ArcFace for improved reliability.
         
         :param image1_path: Path to the first image
         :param image2_path: Path to the second image
-        :return: Verification results dictionary
+        :return: Verification results dictionary with EXACT same structure
         """
         start_time = time.time()
         
@@ -65,9 +85,20 @@ class FastFaceVerification:
                 if not os.path.exists(path):
                     raise FileNotFoundError(f"Image not found: {path}")
             
-            # Detect faces
-            faces1 = self.detect_faces(image1_path)
-            faces2 = self.detect_faces(image2_path)
+            # Load images
+            img1 = cv2.imread(image1_path)
+            img2 = cv2.imread(image2_path)
+            
+            if img1 is None or img2 is None:
+                return {
+                    'is_match': False,
+                    'error': 'Could not read image',
+                    'processing_time': time.time() - start_time
+                }
+            
+            # Detect and get face embeddings using ArcFace
+            faces1 = self.model.get(img1)
+            faces2 = self.model.get(img2)
             
             # Check if faces are detected
             if not faces1 or not faces2:
@@ -77,45 +108,39 @@ class FastFaceVerification:
                     'processing_time': time.time() - start_time
                 }
             
-            # Load images
-            img1 = face_recognition.load_image_file(image1_path)
-            img2 = face_recognition.load_image_file(image2_path)
-            
-            # Compute face encodings
-            encodings1 = face_recognition.face_encodings(img1, faces1)
-            encodings2 = face_recognition.face_encodings(img2, faces2)
+            # Get face encodings (embeddings)
+            # ArcFace model returns embeddings in face.normed_embedding
+            encoding1 = faces1[0].normed_embedding if len(faces1) > 0 else None
+            encoding2 = faces2[0].normed_embedding if len(faces2) > 0 else None
             
             # Check if encoding generation was successful
-            if not encodings1 or not encodings2:
+            if encoding1 is None or encoding2 is None:
                 return {
                     'is_match': False,
                     'error': 'Could not generate face encodings',
                     'processing_time': time.time() - start_time
                 }
             
-            # Compare faces
-            best_match = {
-                'is_match': False,
-                'face_distance': float('inf')
-            }
+            # Calculate cosine similarity
+            similarity = np.dot(encoding1, encoding2) / (
+                np.linalg.norm(encoding1) * np.linalg.norm(encoding2)
+            )
             
-            # Compare first face of each image by default
-            distance = face_recognition.face_distance([encodings1[0]], encodings2[0])[0]
+            # Convert similarity to distance (1 - similarity)
+            # This maintains the same logic: lower distance = more similar
+            distance = 1.0 - similarity
             
-            # Determine match
-            if distance <= self.threshold:
-                best_match = {
-                    'is_match': True,
-                    'face_distance': float(distance)
-                }
+            # Determine match (using threshold on distance)
+            is_match = distance <= self.threshold
             
-            # Add processing details
+            # Calculate processing time
             processing_time = time.time() - start_time
             
+            # Return EXACT same structure as original
             result = {
-                'is_match': best_match['is_match'],
-                'face_distance': best_match['face_distance'],
-                'threshold': self.threshold,
+                'is_match': bool(is_match),
+                'face_distance': float(distance),
+                'threshold': float(self.threshold),
                 'processing_time': processing_time
             }
             
